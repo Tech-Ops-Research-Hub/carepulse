@@ -1,5 +1,6 @@
-"use client";
+"use client"; 
 
+import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -7,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import CustomFormField from "../CustomFormField";
+import Dialog from "@/components/Dialog"; 
 
 export enum FormFieldType {
   INPUT = "input",
@@ -30,6 +31,10 @@ const formSchema = z.object({
   username: z.string().min(2, {
     message: "Username must be at least 2 characters.",
   }),
+  email: z.string().email({ message: "Invalid email address." }),
+  phone: z.string().min(10, {
+    message: "Phone number must be at least 10 characters.",
+  }),
 });
 
 const PatientForm = () => {
@@ -37,12 +42,28 @@ const PatientForm = () => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       username: "",
+      email: "",
+      phone: "",
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  const [isDialogOpen, setDialogOpen] = useState(false); 
+  const [otp, setOtp] = useState("");
+
+  const onSubmit = (values) => {
     console.log(values);
-  }
+    setDialogOpen(true);
+  };
+
+  const handleVerify = () => {
+    console.log("Verifying OTP:", otp);
+    setDialogOpen(false); 
+  };
+
+  const handleCloseDialog = () => {
+    setDialogOpen(false); 
+  };
+
   return (
     <div>
       <Form {...form}>
@@ -57,7 +78,7 @@ const PatientForm = () => {
           <CustomFormField
             fieldType={FormFieldType.INPUT}
             control={form.control}
-            name="name"
+            name="username" 
             label="Full name"
             placeholder="Adrian Hajdin"
             iconSrc="/assets/icons/user.svg"
@@ -119,6 +140,14 @@ const PatientForm = () => {
           </Button>
         </form>
       </Form>
+      <Dialog
+        isOpen={isDialogOpen}
+        onClose={handleCloseDialog}
+        title="Verify OTP"
+        otp={otp}
+        setOtp={setOtp}
+        handleVerify={handleVerify}
+      />
     </div>
   );
 };
