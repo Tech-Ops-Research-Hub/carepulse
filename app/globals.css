@@ -233,7 +233,9 @@
   .shad-dialog button {
     @apply focus:ring-0 focus:ring-offset-0 focus-visible:border-none focus-visible:outline-none focus-visible:ring-transparent focus-visible:ring-offset-0 !important;
   }
-
+  .btn-get-started {
+    @apply w-[496px] h-[48px] px-[24px] py-[8px] rounded-[8px] bg-[#24AE7C] text-white font-bold;
+  }
   .shad-error {
     @apply text-red-400 !important;
   }
