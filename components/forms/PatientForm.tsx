@@ -1,4 +1,4 @@
-"use client"; 
+"use client";
 
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -15,7 +15,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import CustomFormField from "../CustomFormField";
-import Dialog from "@/components/Dialog"; 
+import Dialog from "@/components/Dialog";
+import Image from "next/image"; 
 
 export enum FormFieldType {
   INPUT = "input",
@@ -47,7 +48,7 @@ const PatientForm = () => {
     },
   });
 
-  const [isDialogOpen, setDialogOpen] = useState(false); 
+  const [isDialogOpen, setDialogOpen] = useState(false);
   const [otp, setOtp] = useState("");
 
   const onSubmit = (values) => {
@@ -57,11 +58,11 @@ const PatientForm = () => {
 
   const handleVerify = () => {
     console.log("Verifying OTP:", otp);
-    setDialogOpen(false); 
+    setDialogOpen(false);
   };
 
   const handleCloseDialog = () => {
-    setDialogOpen(false); 
+    setDialogOpen(false);
   };
 
   return (
@@ -78,7 +79,7 @@ const PatientForm = () => {
           <CustomFormField
             fieldType={FormFieldType.INPUT}
             control={form.control}
-            name="username" 
+            name="username"
             label="Full name"
             placeholder="Adrian Hajdin"
             iconSrc="/assets/icons/user.svg"
@@ -93,9 +94,11 @@ const PatientForm = () => {
                 <FormLabel>Email address</FormLabel>
                 <FormControl>
                   <div className="relative flex items-center">
-                    <img
+                    <Image
                       src="/assets/icons/email.svg"
                       alt="Email Icon"
+                      width={24} 
+                      height={24}
                       className="absolute left-3"
                     />
                     <Input
@@ -118,9 +121,11 @@ const PatientForm = () => {
                 <FormLabel>Phone Number</FormLabel>
                 <FormControl>
                   <div className="relative flex items-center">
-                    <img
+                    <Image
                       src="/assets/icons/lead.svg"
                       alt="Phone Icon"
+                      width={24} 
+                      height={24} 
                       className="absolute left-3"
                     />
                     <Input
