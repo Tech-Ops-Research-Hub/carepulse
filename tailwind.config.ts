@@ -54,6 +54,9 @@ const config = {
         pending: "url('/assets/images/pending-bg.png')",
         cancelled: "url('/assets/images/cancelled-bg.png')",
       },
+      backgroundColor: {
+        primary: '#24AE7C'
+      },
       keyframes: {
         "accordion-down": {
           from: { height: "0" },

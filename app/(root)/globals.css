@@ -26,7 +26,6 @@
   }
 }
 
-
 @layer utilities {
   /* ===== UTILITIES */
   .sidebar {
@@ -367,9 +366,10 @@
   border-radius: 16px 0px 0px 0px;
   border: 1px solid transparent;
   opacity: 0;
-  background: #1A1D21F5;
-  border-top: 1px solid #FFFFFF14;
-  box-shadow: 0px 8px 12px 0px #FFFFFF0A inset, 0px 24px 64px -16px #0000003D, 16px 24px 64px -24px #FFFFFF0A inset;
+  background: #1a1d21f5;
+  border-top: 1px solid #ffffff14;
+  box-shadow: 0px 8px 12px 0px #ffffff0a inset, 0px 24px 64px -16px #0000003d,
+    16px 24px 64px -24px #ffffff0a inset;
   z-index: 1000;
 }
 
@@ -378,7 +378,7 @@
   justify-content: space-between;
   font-weight: bold;
   align-items: center;
-   margin-bottom: 28px;
+  margin-bottom: 28px;
 }
 
 .close-button {
@@ -388,8 +388,8 @@
 }
 
 .close-button img {
-  width: 16px; 
-  height: 16px; 
+  width: 16px;
+  height: 16px;
 }
 
 .dialog-overlay {
@@ -402,19 +402,18 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 999; 
+  z-index: 999;
 }
 
 .dialog-content {
-  width: 640px; 
-  height: auto; 
-  background: #1A1D21F5;
+  width: 640px;
+  height: auto;
+  background: #1a1d21f5;
   border-radius: 16px;
   padding: 40px;
   box-shadow: 0 8px 12px #0000001a;
-  position: relative; 
+  position: relative;
 }
-
 
 .verify-button {
   width: 560px;

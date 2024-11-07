@@ -2,9 +2,7 @@
 'use client'
 
 import {
-    Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
     FormLabel,
@@ -31,44 +29,44 @@ import {
     renderSkeleton?:(field:any)=> React.ReactNode,
   }
 
-  const RenderField=({field, props}:{field:any;props: CustomProps}) => {
-    const {fieldType, iconSrc, iconAlt, placeholder, }= props;
+const RenderField = ({ field, props }: { field: any; props: CustomProps }) => {
+  const { fieldType, iconSrc, iconAlt, placeholder, } = props;
 
-   switch (fieldType) {
+  switch (fieldType) {
     case FormFieldType.INPUT:
-        return(
-            <div className="flex rounded-md border border-dark-500 bg-dark-400">
+      return (
+        <div className="flex rounded-md border border-dark-500 bg-dark-400">
 
-                {iconSrc &&(
-                    <Image
-                      src={iconSrc}
-                      height={24}
-                      width={24}
-                      alt={iconAlt || 'icon'}
-                      className='ml-2'
-                     />
+          {iconSrc && (
+            <Image
+              src={iconSrc}
+              height={24}
+              width={24}
+              alt={iconAlt || 'icon'}
+              className='ml-2'
+            />
 
-                )}
+          )}
 
-                <FormControl>
-                    <Input
-                    placeholder={placeholder}
-                    {...field}
-                    className="shad-input border-0"
-                    />
-                </FormControl>
-            </div>
-        )
+          <FormControl>
+            <Input
+              placeholder={placeholder}
+              {...field}
+              className="shad-input border-0"
+            />
+          </FormControl>
+        </div>
+      )
         
-        break;
+      break;
    
     default:
-        break;
-   }
+      break;
   }
+};
 
-const CustomFormField = (props:CustomProps) => {
-    const {control, fieldType, name,label} = props;
+const CustomFormField = (props: CustomProps) => {
+  const { control, fieldType, name, label } = props;
 
   return (
     <div>
@@ -77,18 +75,18 @@ const CustomFormField = (props:CustomProps) => {
         name={name}
         render={({ field }) => (
           <FormItem className="flex-1">
-            {fieldType !== FormFieldType.CHECKBOX && label &&(
-                <FormLabel>{label}</FormLabel>
+            {fieldType !== FormFieldType.CHECKBOX && label && (
+              <FormLabel>{label}</FormLabel>
             )}
 
-            <RenderField field={field} props={props}/>
+            <RenderField field={field} props={props} />
 
-            <FormMessage className ="sha-error"/>
+            <FormMessage className="sha-error" />
           </FormItem>
         )}
-    />
+      />
     </div>
   )
-}
+};
 
 export default CustomFormField

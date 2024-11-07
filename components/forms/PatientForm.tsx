@@ -38,8 +38,10 @@ const formSchema = z.object({
   }),
 });
 
+type formValues = z.infer<typeof formSchema>
+
 const PatientForm = () => {
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<formValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       username: "",
@@ -51,7 +53,7 @@ const PatientForm = () => {
   const [isDialogOpen, setDialogOpen] = useState(false);
   const [otp, setOtp] = useState("");
 
-  const onSubmit = (values) => {
+  const onSubmit = (values: formValues) => {
     console.log(values);
     setDialogOpen(true);
   };
@@ -97,7 +99,7 @@ const PatientForm = () => {
                     <Image
                       src="/assets/icons/email.svg"
                       alt="Email Icon"
-                      width={24} 
+                      width={24}
                       height={24}
                       className="absolute left-3"
                     />
@@ -124,8 +126,8 @@ const PatientForm = () => {
                     <Image
                       src="/assets/icons/lead.svg"
                       alt="Phone Icon"
-                      width={24} 
-                      height={24} 
+                      width={24}
+                      height={24}
                       className="absolute left-3"
                     />
                     <Input
