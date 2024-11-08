@@ -71,7 +71,7 @@ const PatientOnboardingPage = () => {
 
 	return (
 		<div className='flex gap-10 justify-between'>
-			<div className='grid gap-5'>
+			<div className='grid gap-5 lg:w-2/3'>
 				<div>
 					<h1 className='text-2xl md:text-4xl font-bold'>Welcome 👋</h1>
 					<p className=''>Let us know more about yourself.</p>
@@ -460,13 +460,15 @@ const PatientOnboardingPage = () => {
 					</form>
 				</Form>
 			</div>
-			<div className='fixed min-h-screen md:flex hidden '>
-				<Image
-					src='/assets/images/Illustration.png'
-					alt=''
-					fill
-					className='object-contain rounded-md'
-				/>
+			<div className='absolute top-0 right-0 max-h-screen lg:flex hidden w-96 h-full'> 
+				<div className='relative h-full w-full'>
+					<Image
+						src='/assets/images/Illustration.png'
+						alt=''
+						fill
+						className='object-contain rounded-md'
+					/>
+				</div>
 			</div>
 		</div>
 	);
