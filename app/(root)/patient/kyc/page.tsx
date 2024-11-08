@@ -21,6 +21,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Textarea } from '@/components/ui/textarea';
 import FileUpload from '@/components/ui/fileupload';
 import Image from 'next/image';
+import { Checkbox } from '@/components/ui/checkbox';
 
 const formSchema = z.object({
 	fullName: z.string(),
@@ -70,14 +71,12 @@ const PatientOnboardingPage = () => {
 
 	return (
 		<div className='flex gap-10 justify-between'>
-			<div className='grid gap-5 md:w-3/5'>
+			<div className='grid gap-5'>
 				<div>
 					<h1 className='text-2xl md:text-4xl font-bold'>Welcome 👋</h1>
 					<p className=''>Let us know more about yourself.</p>
 				</div>
-
 				<h1 className='text-2xl md:text-4xl font-bold'>Personal Information</h1>
-
 				<Form {...form}>
 					<form onSubmit={form.handleSubmit(onSubmit)} className='grid md:grid-cols-2 gap-4'>
 						<FormField
@@ -394,6 +393,63 @@ const PatientOnboardingPage = () => {
 								</FormItem>
 							)}
 						/>
+						<div className='md:col-span-2 py-4'>
+							<p className='text-2xl md:text-4xl font-bold'>Consent and Privacy</p>
+						</div>
+						<FormField
+							control={form.control}
+							name="treatmentConsent"
+							render={({ field }) => (
+								<FormItem className='flex items-center gap-3 accent-blue-900 space-y-0 md:col-span-2'>
+									<FormControl>
+										<Checkbox
+											checked={field.value}
+											onCheckedChange={field.onChange}
+											className='accent-blue-600 p-2'
+										/>
+									</FormControl>
+									<FormLabel className='text-base'>
+										I consent to receive treatment for my health condition
+									</FormLabel>
+								</FormItem>
+							)}
+						/>
+						<FormField
+							control={form.control}
+							name="informationConsent"
+							render={({ field }) => (
+								<FormItem className='flex items-center gap-3 space-y-0 md:col-span-2'>
+									<FormControl>
+										<Checkbox
+											checked={field.value}
+											onCheckedChange={field.onChange}
+											className='accent-blue-600 p-2'
+										/>
+									</FormControl>
+									<FormLabel className='text-base'>
+										I consent to the use and disclosure of my health information for treatment purposes.
+									</FormLabel>
+								</FormItem>
+							)}
+						/>
+						<FormField
+							control={form.control}
+							name="privacyConsent"
+							render={({ field }) => (
+								<FormItem className='flex items-center gap-3 space-y-0 md:col-span-2'>
+									<FormControl>
+										<Checkbox
+											checked={field.value}
+											onCheckedChange={field.onChange}
+											className='accent-blue-600 p-2'
+										/>
+									</FormControl>
+									<FormLabel className='text-base'>
+										I acknowledge that I have reviewed and agree to the privacy policy.
+									</FormLabel>
+								</FormItem>
+							)}
+						/>
 						<Button
 							className='bg-primary md:col-span-2'
 							variant='default'
@@ -404,7 +460,7 @@ const PatientOnboardingPage = () => {
 					</form>
 				</Form>
 			</div>
-			<div className='w-2/5 relative max-h-screen md:flex hidden'>
+			<div className='fixed min-h-screen md:flex hidden '>
 				<Image
 					src='/assets/images/Illustration.png'
 					alt=''
