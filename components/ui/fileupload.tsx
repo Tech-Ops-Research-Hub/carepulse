@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { useDropzone } from 'react-dropzone'
-import { FileIcon, Loader2, UploadIcon, X } from 'lucide-react'
+import { FileIcon, Loader2, X } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader } from '@/components/ui/dialog'
 import Image from 'next/image'
 import { getFilePreview, uploadFile } from '@/actions/uploadFile'
