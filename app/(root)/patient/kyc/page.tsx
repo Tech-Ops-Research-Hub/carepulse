@@ -23,7 +23,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import CustomFormField from '@/components/CustomFormField';
 
 const formSchema = z.object({
-	fullName: z.string(),
+	name: z.string(),
 	email: z.string().email(),
 	phoneNumber: z.string().regex(phoneNumberRegex, "Invalid phone number"),
 	dob: z.coerce.date(),
@@ -81,7 +81,7 @@ const PatientOnboardingPage = () => {
 						<CustomFormField
 							fieldType={FormFieldType.INPUT}
 							control={form.control}
-							name="fullName"
+							name="name"
 							label="Full Name"
 							placeholder="John Doe"
 							iconSrc="/assets/icons/user.svg"
@@ -347,7 +347,7 @@ const PatientOnboardingPage = () => {
 										<Checkbox
 											checked={field.value}
 											onCheckedChange={field.onChange}
-											className='p-2'
+											className='p-2 bg-gradient'
 										/>
 									</FormControl>
 									<FormLabel className='text-base shad-input-label'>

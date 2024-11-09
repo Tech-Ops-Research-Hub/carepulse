@@ -9,12 +9,12 @@ import {
   Form
 } from "@/components/ui/form";
 import CustomFormField from "../CustomFormField";
-import Dialog from "@/components/Dialog";
-import { useRouter } from "next/navigation";
 import { FormFieldType } from "@/lib/constants";
+import InputOTPForm from "./otpDialog";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
-  username: z.string().min(2, {
+  name: z.string().min(2, {
     message: "Username must be at least 2 characters.",
   }),
   email: z.string().email({ message: "Invalid email address." }),
@@ -29,26 +29,22 @@ const PatientForm = () => {
   const form = useForm<formValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: "",
+      name: "",
       email: "",
       phone: "",
     },
   });
 
-  const router = useRouter()
-
+  const router = useRouter();
   const [isDialogOpen, setDialogOpen] = useState(false);
-  const [otp, setOtp] = useState("");
-
   const onSubmit = (values: formValues) => {
     console.log(values);
     setDialogOpen(true);
-
   };
 
-  const handleVerify = () => {
+  const handleVerify = (data: { otp: string }) => {
     setDialogOpen(false);
-    router.push('/patient/kyc')
+    router.push(`/patient/kyc?name=${form.getValues('name')}&email=${form.getValues('email')}&phoneNumber=${form.getValues('phone')}`)
   };
 
   const handleCloseDialog = () => {
@@ -69,7 +65,7 @@ const PatientForm = () => {
           <CustomFormField
             fieldType={FormFieldType.INPUT}
             control={form.control}
-            name="username"
+            name="name"
             label="Full Name"
             placeholder="John Doe"
             iconSrc="/assets/icons/user.svg"
@@ -98,13 +94,12 @@ const PatientForm = () => {
           </Button>
         </form>
       </Form>
-      <Dialog
+      <InputOTPForm
         isOpen={isDialogOpen}
         onClose={handleCloseDialog}
         title="Verify OTP"
-        otp={otp}
-        setOtp={setOtp}
-        handleVerify={handleVerify}
+        description="Please enter the OTP sent to your registered mobile number."
+        onVerify={handleVerify}
       />
     </div>
   );
