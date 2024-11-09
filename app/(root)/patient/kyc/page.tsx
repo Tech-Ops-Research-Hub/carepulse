@@ -4,7 +4,7 @@ import React from 'react'
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from "@hookform/resolvers/zod";
-import { genderList, identificationTypes, phoneNumberRegex } from '@/lib/constants';
+import { FormFieldType, genderList, identificationTypes, phoneNumberRegex } from '@/lib/constants';
 import {
   Form,
   FormControl,
@@ -22,6 +22,7 @@ import { Textarea } from '@/components/ui/textarea';
 import FileUpload from '@/components/ui/fileupload';
 import Image from 'next/image';
 import { Checkbox } from '@/components/ui/checkbox';
+import CustomFormField from '@/components/CustomFormField';
 
 const formSchema = z.object({
 	fullName: z.string(),
@@ -79,54 +80,48 @@ const PatientOnboardingPage = () => {
 				<h1 className='text-2xl md:text-4xl font-bold'>Personal Information</h1>
 				<Form {...form}>
 					<form onSubmit={form.handleSubmit(onSubmit)} className='grid md:grid-cols-2 gap-4'>
-						<FormField
+						<CustomFormField
+							fieldType={FormFieldType.INPUT}
 							control={form.control}
 							name="fullName"
-							render={({ field }) => (
-								<FormItem className='md:col-span-2'>
-									<FormLabel>
-										Full Name
-									</FormLabel>
-									<Input {...field} placeholder='ex: Adam' />
-									<FormMessage />
-								</FormItem>
-							)}
+							label="Full Name"
+							placeholder="John Doe"
+							iconSrc="/assets/icons/user.svg"
+							iconAlt="user"
+							className='md:col-span-2'
 						/>
-						<FormField
+
+						<CustomFormField
+							fieldType={FormFieldType.INPUT}
 							control={form.control}
 							name="email"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>
-										Email Address
-									</FormLabel>
-									<Input {...field} placeholder='abc@gmail.com' />
-									<FormMessage />
-								</FormItem>
-							)}
+							label="Email Address"
+							placeholder="ex: abc@gmail.com"
+							iconSrc="/assets/icons/email.svg"
+							iconAlt="email"
 						/>
-						<FormField
+						<CustomFormField
+							fieldType={FormFieldType.INPUT}
 							control={form.control}
 							name="phoneNumber"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>
-										Phone Number
-									</FormLabel>
-									<Input {...field} type='tel' placeholder='ex: 0712345678' />
-									<FormMessage />
-								</FormItem>
-							)}
+							label="Phone Number"
+							placeholder="ex: 0712345678"
+							iconSrc="/assets/icons/lead.svg"
+							iconAlt="phone"
 						/>
+
 						<FormField
 							control={form.control}
 							name="dob"
 							render={({ field }) => (
 								<FormItem className=''>
-									<FormLabel>
-										Date of Birth
-									</FormLabel>
-									<DatePicker date={field.value} setDate={field.onChange} placeholder='Select your birth date' />
+									<FormLabel className='shad-input-label '>Date of Birth</FormLabel>
+									<DatePicker
+										date={field.value}
+										setDate={field.onChange}
+										placeholder='Select your birth date'
+										className='shad-input'
+									/>
 									<FormMessage />
 								</FormItem>
 							)}
@@ -136,7 +131,7 @@ const PatientOnboardingPage = () => {
 							name="gender"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Gender</FormLabel>
+									<FormLabel className='shad-input-label'>Gender</FormLabel>
 									<FormControl>
 										<RadioGroup
 											onValueChange={field.onChange}
@@ -145,7 +140,7 @@ const PatientOnboardingPage = () => {
 										>
 											{
 												genderList.map((el) => (
-													<FormItem key={el.value} className="flex items-center space-x-3 space-y-0 border p-1 px-3 border-dashed rounded-md">
+													<FormItem key={el.value} className="flex items-center space-x-3 space-y-0 border p-1 px-3 border-dashed rounded-md shad-input">
 														<FormControl>
 															<RadioGroupItem value={el.value} />
 														</FormControl>
@@ -161,57 +156,33 @@ const PatientOnboardingPage = () => {
 								</FormItem>
 							)}
 						/>
-						<FormField
+						<CustomFormField
+							fieldType={FormFieldType.INPUT}
 							control={form.control}
 							name="address"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>
-										Address
-									</FormLabel>
-									<Input {...field} placeholder='ex: off Uhuru highway' />
-									<FormMessage />
-								</FormItem>
-							)}
+							label="Address"
+							placeholder="ex: off Uhuru highway"
 						/>
-						<FormField
+						<CustomFormField
+							fieldType={FormFieldType.INPUT}
 							control={form.control}
 							name="occupation"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>
-										Occupation
-									</FormLabel>
-									<Input {...field} placeholder='ex: Software Developer' />
-									<FormMessage />
-								</FormItem>
-							)}
+							label="Occupation"
+							placeholder="ex: Software Developer"
 						/>
-						<FormField
+						<CustomFormField
+							fieldType={FormFieldType.INPUT}
 							control={form.control}
 							name="emergencyName"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>
-										Emergency Contact Name
-									</FormLabel>
-									<Input {...field} placeholder="Guardian's name" />
-									<FormMessage />
-								</FormItem>
-							)}
+							label="Emergency Contact Name"
+							placeholder="Guardian's name"
 						/>
-						<FormField
+						<CustomFormField
+							fieldType={FormFieldType.INPUT}
 							control={form.control}
 							name="emergencyPhone"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>
-										Emergency Phone Number
-									</FormLabel>
-									<Input {...field} placeholder='ex: 0712345678' type='tel' />
-									<FormMessage />
-								</FormItem>
-							)}
+							label="Emergency Phone Number"
+							placeholder="ex: 0712345678"
 						/>
 						<div className='md:col-span-2 py-4'>
 							<p className='text-2xl md:text-4xlfont-bold'>Medical Information</p>
@@ -221,7 +192,7 @@ const PatientOnboardingPage = () => {
 							name="physician"
 							render={({ field }) => (
 								<FormItem className="md:col-span-2">
-									<FormLabel>
+									<FormLabel className='shad-input-label'>
 										Primary Care Physician
 									</FormLabel>
 									<Select
@@ -230,101 +201,63 @@ const PatientOnboardingPage = () => {
 										{...field}
 									>
 										<FormControl>
-											<SelectTrigger>
-												<SelectValue placeholder="Select an option" />
+											<SelectTrigger className='shad-select-trigger'>
+												<SelectValue placeholder="Select an option" className='placeholder:text-dark-600' />
 											</SelectTrigger>
 										</FormControl>
-										<SelectContent className=''>
-											{genderList.map((el) => {
-												return (
-													<SelectItem key={el.value} value={el.value}>
-														{el.label}
-													</SelectItem>
-												)
-											})}
+										<SelectContent className='shad-select-content'>
+											{genderList.map((el) => (
+												<SelectItem key={el.value} value={el.value} className='hover:bg-dark-500'>
+													{el.label}
+												</SelectItem>
+											))}
 										</SelectContent>
 									</Select>
 									<FormMessage />
 								</FormItem>
 							)}
 						/>
-						<FormField
+						<CustomFormField
+							fieldType={FormFieldType.INPUT}
 							control={form.control}
 							name="policyProvider"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>
-										Insurance Provider
-									</FormLabel>
-									<Input {...field} placeholder='ex: Britam' />
-									<FormMessage />
-								</FormItem>
-							)}
+							label="Insurance Provider"
+							placeholder="ex: Britam"
 						/>
-						<FormField
+						<CustomFormField
+							fieldType={FormFieldType.INPUT}
 							control={form.control}
 							name="policyNumber"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>
-										Insurance Policy Number
-									</FormLabel>
-									<Input {...field} placeholder='ex: ABC1234' />
-									<FormMessage />
-								</FormItem>
-							)}
+							label="Insurance Policy Number"
+							placeholder="ex: ABC1234"
 						/>
-						<FormField
+						<CustomFormField
+							fieldType={FormFieldType.TEXTAREA}
 							control={form.control}
 							name="allergies"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>
-										Allergies
-									</FormLabel>
-									<Textarea {...field} placeholder='ex: Peanuts, Penicillin, Pollen' />
-									<FormMessage />
-								</FormItem>
-							)}
+							label="Allergies"
+							placeholder="ex: Peanuts, Penicillin, Pollen"
 						/>
-						<FormField
+						<CustomFormField
+							fieldType={FormFieldType.TEXTAREA}
 							control={form.control}
 							name="currentMedications"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>
-										Current Medications
-									</FormLabel>
-									<Textarea {...field} placeholder='ex: Ibuprofen 200mg, Lexothyroxine 50mcg' />
-									<FormMessage />
-								</FormItem>
-							)}
+							label="Current Medications"
+							placeholder="ex: Ibuprofen 200mg, Lexothyroxine 50mcg"
 						/>
-						<FormField
+						<CustomFormField
+							fieldType={FormFieldType.TEXTAREA}
 							control={form.control}
 							name="familyMedicalHistory"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>
-										Family Medical History (if relevant)
-									</FormLabel>
-									<Textarea {...field} placeholder='ex: Mother had breast cancer' />
-									<FormMessage />
-								</FormItem>
-							)}
+							label="Family Medical History (if relevant)"
+							placeholder="ex: Mother had breast cancer"
 						/>
-						<FormField
+						<CustomFormField
+							fieldType={FormFieldType.TEXTAREA}
 							control={form.control}
 							name="medicalHistory"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>
-										Past Medical History
-									</FormLabel>
-									<Textarea {...field} placeholder='ex: Asthma diagnosis in childhood' />
-									<FormMessage />
-								</FormItem>
-							)}
+							label="Past Medical History"
+							placeholder="ex: Asthma diagnosis in childhood"
 						/>
 						<div className='md:col-span-2 py-4'>
 							<p className='text-2xl md:text-4xl font-bold'>Identification and Verification</p>
@@ -334,7 +267,7 @@ const PatientOnboardingPage = () => {
 							name="idType"
 							render={({ field }) => (
 								<FormItem className="md:col-span-2">
-									<FormLabel>
+									<FormLabel className='shad-input-label'>
 										Identification Type
 									</FormLabel>
 									<Select
@@ -343,36 +276,29 @@ const PatientOnboardingPage = () => {
 										{...field}
 									>
 										<FormControl>
-											<SelectTrigger>
-												<SelectValue placeholder="Select an option" />
+											<SelectTrigger className='shad-select-trigger'>
+												<SelectValue placeholder="Select an option" className='placeholder:text-dark-600' />
 											</SelectTrigger>
 										</FormControl>
-										<SelectContent className=''>
-											{identificationTypes.map((el) => {
-												return (
-													<SelectItem key={el.value} value={el.value}>
-														{el.label}
-													</SelectItem>
-												)
-											})}
+										<SelectContent className='shad-select-content'>
+											{identificationTypes.map((el) => (
+												<SelectItem key={el.value} value={el.value} className='hover:bg-dark-500'>
+													{el.label}
+												</SelectItem>
+											))}
 										</SelectContent>
 									</Select>
 									<FormMessage />
 								</FormItem>
 							)}
 						/>
-						<FormField
+						<CustomFormField
+							fieldType={FormFieldType.INPUT}
 							control={form.control}
 							name="idNumber"
-							render={({ field }) => (
-								<FormItem className='md:col-span-2'>
-									<FormLabel>
-										Identification Number
-									</FormLabel>
-									<Input {...field} placeholder='ex: ABC1234' />
-									<FormMessage />
-								</FormItem>
-							)}
+							label="Identification Number"
+							placeholder="ex: ABC1234"
+							className='md:col-span-2'
 						/>
 
 						<FormField
@@ -380,11 +306,11 @@ const PatientOnboardingPage = () => {
 							name="idFileUrl"
 							render={({ field }) => (
 								<FormItem className='md:col-span-2'>
-									<FormLabel>
+									<FormLabel className='shad-input-label'>
 										Scanned copy of identification document
 									</FormLabel>
 									<FileUpload
-										fileUrl={field.value}
+										fileId={field.value}
 										onChange={field.onChange}
 										allowFiles={allowedFiles}
 										description='SVG, PNG, JPG (max. 800x400px)'
@@ -405,10 +331,10 @@ const PatientOnboardingPage = () => {
 										<Checkbox
 											checked={field.value}
 											onCheckedChange={field.onChange}
-											className='accent-blue-600 p-2'
+											className='p-2'
 										/>
 									</FormControl>
-									<FormLabel className='text-base'>
+									<FormLabel className='text-base shad-input-label'>
 										I consent to receive treatment for my health condition
 									</FormLabel>
 								</FormItem>
@@ -423,10 +349,10 @@ const PatientOnboardingPage = () => {
 										<Checkbox
 											checked={field.value}
 											onCheckedChange={field.onChange}
-											className='accent-blue-600 p-2'
+											className='p-2'
 										/>
 									</FormControl>
-									<FormLabel className='text-base'>
+									<FormLabel className='text-base shad-input-label'>
 										I consent to the use and disclosure of my health information for treatment purposes.
 									</FormLabel>
 								</FormItem>
@@ -441,10 +367,10 @@ const PatientOnboardingPage = () => {
 										<Checkbox
 											checked={field.value}
 											onCheckedChange={field.onChange}
-											className='accent-blue-600 p-2'
+											className='p-2'
 										/>
 									</FormControl>
-									<FormLabel className='text-base'>
+									<FormLabel className='text-base shad-input-label'>
 										I acknowledge that I have reviewed and agree to the privacy policy.
 									</FormLabel>
 								</FormItem>
@@ -460,7 +386,7 @@ const PatientOnboardingPage = () => {
 					</form>
 				</Form>
 			</div>
-			<div className='absolute top-0 right-0 max-h-screen lg:flex hidden w-96 h-full'> 
+			<div className='absolute top-0 right-0 max-h-screen lg:flex hidden w-96 h-full'>
 				<div className='relative h-full w-full'>
 					<Image
 						src='/assets/images/Illustration.png'

@@ -1,24 +1,16 @@
-import type { Metadata } from "next";
 import Header from "./_components/header";
+import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: "CarePulse Patient",
-  description: "Patient onboarding form",
-};
+  title: 'Carepulse Patient',
+  description: 'Patient onboarding form',
+}
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
-      <body>
-        <div className="p-6 max-w-7xl mx-auto relative">
-          <Header />
-          {children}
-        </div>
-      </body>
-    </html>
+    <main className="p-6 max-w-7xl mx-auto relative">
+      <Header />
+      {children}
+    </main>
   );
 };

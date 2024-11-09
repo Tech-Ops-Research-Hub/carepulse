@@ -55,6 +55,15 @@ const config = {
         cancelled: "url('/assets/images/cancelled-bg.png')",
       },
       backgroundColor: {
+        primary: '#24AE7C',
+        background: '#24AE7C',
+        destructive: '#FF5733',
+        gradient: "bg-gradient-to-r from-cyan-500 to-blue-500"
+      },
+      borderColor: {
+        primary: '#24AE7C'
+      },
+      textColor: {
         primary: '#24AE7C'
       },
       keyframes: {

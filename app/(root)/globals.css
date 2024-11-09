@@ -461,3 +461,8 @@
 .sub {
   margin-bottom: 40px;
 }
+
+input[type="checkbox"] {
+  accent-color: red;
+  /* Green color */
+}
