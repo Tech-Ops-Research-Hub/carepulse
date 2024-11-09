@@ -13,10 +13,10 @@ export default function Home() {
         <div className="sub-container max-w-[496px]">
           <Image
             src="/assets/icons/logo-full.svg"
-            height={1000}
-            width={1000}
-            alt="patient"
-            className="mb-12 h-10 w-fit"
+            height={200}
+            width={200}
+            alt="logo"
+            className="mb-12"
           />
              
           <PatientForm />
