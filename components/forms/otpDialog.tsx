@@ -27,6 +27,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Button } from "../ui/button";
+import { Loader2 } from "lucide-react";
 
 const FormSchema = z.object({
   otp: z.string().min(6, {
@@ -42,9 +43,10 @@ type InputOTPFormProps = {
   title: string
   description: string,
   onVerify: (data: formValues) => void
+  loading: boolean
 }
 
-const InputOTPForm = ({ isOpen, onClose, title, description, onVerify }: InputOTPFormProps) => {
+const InputOTPForm = ({ isOpen, onClose, title, description, onVerify, loading }: InputOTPFormProps) => {
   const form = useForm<formValues>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -93,7 +95,7 @@ const InputOTPForm = ({ isOpen, onClose, title, description, onVerify }: InputOT
             />
             <Button type="submit"
               className="w-full" variant='default'>
-              Verify
+              Verify {loading && <Loader2 className="ml-2 animate-spin h-5 w-5" />}
             </Button>
           </form>
         </Form>

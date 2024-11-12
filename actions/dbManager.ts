@@ -5,7 +5,7 @@ import { ID } from "appwrite";
 
 const { APPWRITE_DATABASEID } = process.env;
 
-export const createDocument = async (collectionId: string, document: { [key: string]: string }) => {
+export const createDocument = async (collectionId: string, document: { [key: string]: string | boolean | number }) => {
   return database.createDocument(
     APPWRITE_DATABASEID!,
     collectionId,

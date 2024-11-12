@@ -1,10 +1,10 @@
 'use client'
 
-import React from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FormFieldType, genderList, identificationTypes, phoneNumberRegex } from '@/lib/constants';
+import { FormFieldType, genderList, identificationTypes, PatientCollectionId, phoneNumberRegex } from '@/lib/constants';
 import {
   Form,
   FormControl,
@@ -21,11 +21,18 @@ import FileUpload from '@/components/ui/fileupload';
 import Image from 'next/image';
 import { Checkbox } from '@/components/ui/checkbox';
 import CustomFormField from '@/components/CustomFormField';
+import { useAuthCtx } from '@/context/authContext';
+import { useRouter } from 'next/navigation';
+import { format } from 'date-fns';
+import { createDocument } from '@/actions/dbManager';
+import { Loader2 } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import { PatientDasboard } from '@/lib/routes';
 
 const formSchema = z.object({
 	name: z.string(),
 	email: z.string().email(),
-	phoneNumber: z.string().regex(phoneNumberRegex, "Invalid phone number"),
+	phone: z.string().regex(phoneNumberRegex, "Invalid phone number"),
 	dob: z.coerce.date(),
 	gender: z.enum(["Male", "Female", "Other"], {
     required_error: "You need to select a gender.",
@@ -34,11 +41,11 @@ const formSchema = z.object({
 	occupation: z.string(),
 	emergencyName: z.string(),
 	emergencyPhone: z.string().regex(phoneNumberRegex, "Invalid phone number"),
-	physician: z.string(),
-	policyProvider: z.string(),
-	policyNumber: z.string(),
-	allergies: z.string(),
-	currentMedications: z.string(),
+	physician: z.string().optional(),
+	policyProvider: z.string().optional(),
+	policyNumber: z.string().optional(),
+	allergies: z.string().optional(),
+	currentMedications: z.string().optional(),
 	familyMedicalHistory: z.string().optional(),
 	medicalHistory: z.string().optional(),
 	idType: z.string(),
@@ -52,6 +59,11 @@ const formSchema = z.object({
 type formValues = z.infer<typeof formSchema>
 
 const PatientOnboardingPage = () => {
+	const { profileData, setProfileData } = useAuthCtx();
+	const [loading, setLoading] = useState<boolean>(false)
+	const { back, push } = useRouter();
+	const { toast } = useToast();
+
 	const form = useForm<formValues>({
 		resolver: zodResolver(formSchema)
 	});
@@ -65,8 +77,39 @@ const PatientOnboardingPage = () => {
 
 
 	const onSubmit = async (values: formValues) => {
-		console.log({ values });
-	}
+		setLoading(true)
+		setProfileData({ ...values, dob: format(values.dob, "yyyy-LL-dd") })
+		await createDocument(PatientCollectionId, { ...values, dob: format(values.dob, "yyyy-LL-dd") })
+			.then((value) => {
+				// create profile in collection
+				console.log(value.$id);
+				push(PatientDasboard)
+
+			}).catch((err) => {
+				console.log('create profile err: ',err );
+				toast({
+					variant: 'destructive',
+					description:'Failed to submit. Try again later!'
+				})
+			}).finally(() => setLoading(false));
+	};
+
+	const setInitialValues = useCallback(
+		() => {
+			if (profileData.email) {
+				form.setValue('name', profileData.name, { shouldValidate: true });
+				form.setValue('email', profileData.email, { shouldValidate: true })
+				form.setValue('phone', profileData.phone, { shouldValidate: true })
+			} else {
+				back()
+			}
+		}, [back, form, profileData.email, profileData.name, profileData.phone]);
+	
+
+	useEffect(() => {
+		setInitialValues()
+	}, [setInitialValues])
+	
 
 	return (
 		<div className='flex gap-10 justify-between'>
@@ -87,6 +130,7 @@ const PatientOnboardingPage = () => {
 							iconSrc="/assets/icons/user.svg"
 							iconAlt="user"
 							className='md:col-span-2'
+							// disabled
 						/>
 
 						<CustomFormField
@@ -97,15 +141,17 @@ const PatientOnboardingPage = () => {
 							placeholder="ex: abc@gmail.com"
 							iconSrc="/assets/icons/email.svg"
 							iconAlt="email"
+							// disabled
 						/>
 						<CustomFormField
 							fieldType={FormFieldType.INPUT}
 							control={form.control}
-							name="phoneNumber"
+							name="phone"
 							label="Phone Number"
 							placeholder="ex: 0712345678"
 							iconSrc="/assets/icons/lead.svg"
 							iconAlt="phone"
+							// disabled
 						/>
 
 						<FormField
@@ -378,7 +424,7 @@ const PatientOnboardingPage = () => {
 							className='bg-primary md:col-span-2'
 							variant='default'
 							type='submit'>
-							Submit
+							Submit {loading && <Loader2 className="ml-2 animate-spin h-5 w-5" />}
 						</Button>
 
 					</form>

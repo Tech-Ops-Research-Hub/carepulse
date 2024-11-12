@@ -74,10 +74,11 @@ const RenderField = ({ field, props }: { field: any; props: CustomProps }) => {
 };
 
 const CustomFormField = (props: CustomProps) => {
-  const { control, fieldType, name, label, className } = props;
+  const { control, fieldType, name, label, className, disabled } = props;
 
   return (
     <FormField
+      disabled={disabled || false}
       control={control}
       name={name}
       render={({ field }) => (

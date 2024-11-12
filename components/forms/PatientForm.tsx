@@ -9,42 +9,75 @@ import {
   Form
 } from "@/components/ui/form";
 import CustomFormField from "../CustomFormField";
-import { FormFieldType } from "@/lib/constants";
+import { FormFieldType, PatientCollectionId, phoneNumberRegex } from "@/lib/constants";
 import InputOTPForm from "./otpDialog";
 import { useRouter } from "next/navigation";
+import { useAuthCtx } from "@/context/authContext";
+import { listDocuments } from "@/actions/dbManager";
+import { Query } from "appwrite";
+import { Loader2 } from "lucide-react";
+import { PatientDasboard, PatientOnboarding } from "@/lib/routes";
+import { useToast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
   name: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
+    message: "Full name must be at least 2 characters.",
   }),
   email: z.string().email({ message: "Invalid email address." }),
   phone: z.string().min(10, {
     message: "Phone number must be at least 10 characters.",
-  }),
+  }).regex(phoneNumberRegex, "Invalid phone number"),
 });
 
 type formValues = z.infer<typeof formSchema>
 
 const PatientForm = () => {
+  const { profileData, setProfileData } = useAuthCtx();
+	const { toast } = useToast();
+
   const form = useForm<formValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      email: "",
-      phone: "",
+      name: profileData.name || '',
+      email: profileData.email || "",
+      phone: profileData.phone || "",
     },
   });
 
   const router = useRouter();
-  const [isDialogOpen, setDialogOpen] = useState(false);
+  const [isDialogOpen, setDialogOpen] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false)
   const onSubmit = (values: formValues) => {
-    console.log(values);
+    setProfileData(values)
+    // generate otp for the specified phone number / email
     setDialogOpen(true);
   };
 
-  const handleVerify = (data: { otp: string }) => {
-    setDialogOpen(false);
-    router.push(`/patient/kyc?name=${form.getValues('name')}&email=${form.getValues('email')}&phoneNumber=${form.getValues('phone')}`)
+  const handleVerify = async (data: { otp: string }) => {
+    setLoading(true)
+    // validate otp, and check if profile exists with this email,
+    // if profile exists - direct to dashboard, if not, redirect to / patient / kyc
+
+    // validate otp
+    console.log({ data });
+
+    const email = form.getValues('email')
+    await listDocuments(PatientCollectionId, [Query.equal('email', email)]).then((value) => {
+      console.log({value});
+      if (value.total > 0) {
+        // redirect to dashboard
+        router.push(PatientDasboard)
+        return
+      }
+      router.push(PatientOnboarding)
+      setDialogOpen(false);
+    }).catch((err) => {
+      console.log("fetch profile err: ", err);
+      toast({
+        variant: 'destructive',
+        description: 'Failed to fetch profile. Try again later!'
+      })
+    }).finally(() => setLoading(false))
   };
 
   const handleCloseDialog = () => {
@@ -90,7 +123,7 @@ const PatientForm = () => {
             iconAlt="phone"
           />
           <Button type="submit" className="w-full px-4 font-bold text-base">
-            Get Started
+            Get Started {loading && <Loader2 className="ml-2 animate-spin h-5 w-5" />}
           </Button>
         </form>
       </Form>
@@ -100,6 +133,7 @@ const PatientForm = () => {
         title="Verify OTP"
         description="Please enter the OTP sent to your registered mobile number."
         onVerify={handleVerify}
+        loading={loading}
       />
     </div>
   );

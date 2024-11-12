@@ -40,3 +40,5 @@ export enum FormFieldType {
   SELECT = "select",
   SKELETON = "skeleton",
 }
+
+export const PatientCollectionId = 'patient'
