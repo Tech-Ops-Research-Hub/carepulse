@@ -1,0 +1,447 @@
+'use client'
+
+import React, { useCallback, useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { FormFieldType, genderList, identificationTypes, PatientCollectionId, phoneNumberRegex } from '@/lib/constants';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { DatePicker } from '@/components/ui/datepicker';
+import { Button } from '@/components/ui/button';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import FileUpload from '@/components/ui/fileupload';
+import Image from 'next/image';
+import { Checkbox } from '@/components/ui/checkbox';
+import CustomFormField from '@/components/CustomFormField';
+import { useAuthCtx } from '@/context/authContext';
+import { useRouter } from 'next/navigation';
+import { format } from 'date-fns';
+import { createDocument } from '@/actions/dbManager';
+import { Loader2 } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import { PatientDasboard } from '@/lib/routes';
+
+const formSchema = z.object({
+	name: z.string(),
+	email: z.string().email(),
+	phone: z.string().regex(phoneNumberRegex, "Invalid phone number"),
+	dob: z.coerce.date(),
+	gender: z.enum(["Male", "Female", "Other"], {
+    required_error: "You need to select a gender.",
+  }),
+	address: z.string(),
+	occupation: z.string(),
+	emergencyName: z.string(),
+	emergencyPhone: z.string().regex(phoneNumberRegex, "Invalid phone number"),
+	physician: z.string().optional(),
+	policyProvider: z.string().optional(),
+	policyNumber: z.string().optional(),
+	allergies: z.string().optional(),
+	currentMedications: z.string().optional(),
+	familyMedicalHistory: z.string().optional(),
+	medicalHistory: z.string().optional(),
+	idType: z.string(),
+	idNumber: z.string(),
+	idFileUrl: z.string(),
+	treatmentConsent: z.boolean(),
+	informationConsent: z.boolean(),
+	privacyConsent: z.boolean(),
+});
+
+type formValues = z.infer<typeof formSchema>
+
+const PatientOnboardingPage = () => {
+	const { profileData, setProfileData } = useAuthCtx();
+	const [loading, setLoading] = useState<boolean>(false)
+	const { back, push } = useRouter();
+	const { toast } = useToast();
+
+	const form = useForm<formValues>({
+		resolver: zodResolver(formSchema)
+	});
+
+	const allowedFiles = {
+    'image/png': ['.png'],
+    'image/jpg': ['.jpg'],
+    'image/jpeg': ['.jpeg'],
+    'image/svg': ['.svg'],
+  }
+
+
+	const onSubmit = async (values: formValues) => {
+		setLoading(true)
+		setProfileData({ ...values, dob: format(values.dob, "yyyy-LL-dd") })
+		await createDocument(PatientCollectionId, { ...values, dob: format(values.dob, "yyyy-LL-dd") })
+			.then((value) => {
+				// create profile in collection
+				console.log(value.$id);
+				push(PatientDasboard)
+
+			}).catch((err) => {
+				console.log('create profile err: ',err );
+				toast({
+					variant: 'destructive',
+					description:'Failed to submit. Try again later!'
+				})
+			}).finally(() => setLoading(false));
+	};
+
+	const setInitialValues = useCallback(
+		() => {
+			if (profileData.email) {
+				form.setValue('name', profileData.name, { shouldValidate: true });
+				form.setValue('email', profileData.email, { shouldValidate: true })
+				form.setValue('phone', profileData.phone, { shouldValidate: true })
+			} else {
+				back()
+			}
+		}, [back, form, profileData.email, profileData.name, profileData.phone]);
+	
+
+	useEffect(() => {
+		setInitialValues()
+	}, [setInitialValues])
+	
+
+	return (
+		<div className='flex gap-10 justify-between'>
+			<div className='grid gap-5 lg:w-2/3'>
+				<div>
+					<h1 className='text-2xl md:text-4xl font-bold'>Welcome 👋</h1>
+					<p className=''>Let us know more about yourself.</p>
+				</div>
+				<h1 className='text-2xl md:text-4xl font-bold'>Personal Information</h1>
+				<Form {...form}>
+					<form onSubmit={form.handleSubmit(onSubmit)} className='grid md:grid-cols-2 gap-4'>
+						<CustomFormField
+							fieldType={FormFieldType.INPUT}
+							control={form.control}
+							name="name"
+							label="Full Name"
+							placeholder="John Doe"
+							iconSrc="/assets/icons/user.svg"
+							iconAlt="user"
+							className='md:col-span-2'
+							// disabled
+						/>
+
+						<CustomFormField
+							fieldType={FormFieldType.INPUT}
+							control={form.control}
+							name="email"
+							label="Email Address"
+							placeholder="ex: abc@gmail.com"
+							iconSrc="/assets/icons/email.svg"
+							iconAlt="email"
+							// disabled
+						/>
+						<CustomFormField
+							fieldType={FormFieldType.INPUT}
+							control={form.control}
+							name="phone"
+							label="Phone Number"
+							placeholder="ex: 0712345678"
+							iconSrc="/assets/icons/lead.svg"
+							iconAlt="phone"
+							// disabled
+						/>
+
+						<FormField
+							control={form.control}
+							name="dob"
+							render={({ field }) => (
+								<FormItem className=''>
+									<FormLabel className='shad-input-label '>Date of Birth</FormLabel>
+									<DatePicker
+										date={field.value}
+										setDate={field.onChange}
+										placeholder='Select your birth date'
+										className='shad-input'
+									/>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+						<FormField
+							control={form.control}
+							name="gender"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel className='shad-input-label'>Gender</FormLabel>
+									<FormControl>
+										<RadioGroup
+											onValueChange={field.onChange}
+											defaultValue={field.value}
+											className="flex flex-wrap justify-between"
+										>
+											{
+												genderList.map((el) => (
+													<FormItem key={el.value} className="flex items-center space-x-3 space-y-0 border p-1 px-3 border-dashed rounded-md shad-input">
+														<FormControl>
+															<RadioGroupItem value={el.value} />
+														</FormControl>
+														<FormLabel className="font-normal text-lg cursor-pointer">
+															{el.label}
+														</FormLabel>
+													</FormItem>
+												))
+											}
+										</RadioGroup>
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+						<CustomFormField
+							fieldType={FormFieldType.INPUT}
+							control={form.control}
+							name="address"
+							label="Address"
+							placeholder="ex: off Uhuru highway"
+						/>
+						<CustomFormField
+							fieldType={FormFieldType.INPUT}
+							control={form.control}
+							name="occupation"
+							label="Occupation"
+							placeholder="ex: Software Developer"
+						/>
+						<CustomFormField
+							fieldType={FormFieldType.INPUT}
+							control={form.control}
+							name="emergencyName"
+							label="Emergency Contact Name"
+							placeholder="Guardian's name"
+						/>
+						<CustomFormField
+							fieldType={FormFieldType.INPUT}
+							control={form.control}
+							name="emergencyPhone"
+							label="Emergency Phone Number"
+							placeholder="ex: 0712345678"
+						/>
+						<div className='md:col-span-2 py-4'>
+							<p className='text-2xl md:text-4xlfont-bold'>Medical Information</p>
+						</div>
+						<FormField
+							control={form.control}
+							name="physician"
+							render={({ field }) => (
+								<FormItem className="md:col-span-2">
+									<FormLabel className='shad-input-label'>
+										Primary Care Physician
+									</FormLabel>
+									<Select
+										onValueChange={field.onChange}
+										defaultValue={field.value}
+										{...field}
+									>
+										<FormControl>
+											<SelectTrigger className='shad-select-trigger'>
+												<SelectValue placeholder="Select an option" className='placeholder:text-dark-600' />
+											</SelectTrigger>
+										</FormControl>
+										<SelectContent className='shad-select-content'>
+											{genderList.map((el) => (
+												<SelectItem key={el.value} value={el.value} className='hover:bg-dark-500'>
+													{el.label}
+												</SelectItem>
+											))}
+										</SelectContent>
+									</Select>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+						<CustomFormField
+							fieldType={FormFieldType.INPUT}
+							control={form.control}
+							name="policyProvider"
+							label="Insurance Provider"
+							placeholder="ex: Britam"
+						/>
+						<CustomFormField
+							fieldType={FormFieldType.INPUT}
+							control={form.control}
+							name="policyNumber"
+							label="Insurance Policy Number"
+							placeholder="ex: ABC1234"
+						/>
+						<CustomFormField
+							fieldType={FormFieldType.TEXTAREA}
+							control={form.control}
+							name="allergies"
+							label="Allergies"
+							placeholder="ex: Peanuts, Penicillin, Pollen"
+						/>
+						<CustomFormField
+							fieldType={FormFieldType.TEXTAREA}
+							control={form.control}
+							name="currentMedications"
+							label="Current Medications"
+							placeholder="ex: Ibuprofen 200mg, Lexothyroxine 50mcg"
+						/>
+						<CustomFormField
+							fieldType={FormFieldType.TEXTAREA}
+							control={form.control}
+							name="familyMedicalHistory"
+							label="Family Medical History (if relevant)"
+							placeholder="ex: Mother had breast cancer"
+						/>
+						<CustomFormField
+							fieldType={FormFieldType.TEXTAREA}
+							control={form.control}
+							name="medicalHistory"
+							label="Past Medical History"
+							placeholder="ex: Asthma diagnosis in childhood"
+						/>
+						<div className='md:col-span-2 py-4'>
+							<p className='text-2xl md:text-4xl font-bold'>Identification and Verification</p>
+						</div>
+						<FormField
+							control={form.control}
+							name="idType"
+							render={({ field }) => (
+								<FormItem className="md:col-span-2">
+									<FormLabel className='shad-input-label'>
+										Identification Type
+									</FormLabel>
+									<Select
+										onValueChange={field.onChange}
+										defaultValue={field.value}
+										{...field}
+									>
+										<FormControl>
+											<SelectTrigger className='shad-select-trigger'>
+												<SelectValue placeholder="Select an option" className='placeholder:text-dark-600' />
+											</SelectTrigger>
+										</FormControl>
+										<SelectContent className='shad-select-content'>
+											{identificationTypes.map((el) => (
+												<SelectItem key={el.value} value={el.value} className='hover:bg-dark-500'>
+													{el.label}
+												</SelectItem>
+											))}
+										</SelectContent>
+									</Select>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+						<CustomFormField
+							fieldType={FormFieldType.INPUT}
+							control={form.control}
+							name="idNumber"
+							label="Identification Number"
+							placeholder="ex: ABC1234"
+							className='md:col-span-2'
+						/>
+
+						<FormField
+							control={form.control}
+							name="idFileUrl"
+							render={({ field }) => (
+								<FormItem className='md:col-span-2'>
+									<FormLabel className='shad-input-label'>
+										Scanned copy of identification document
+									</FormLabel>
+									<FileUpload
+										fileId={field.value}
+										onChange={field.onChange}
+										allowFiles={allowedFiles}
+										description='SVG, PNG, JPG (max. 800x400px)'
+									/>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+						<div className='md:col-span-2 py-4'>
+							<p className='text-2xl md:text-4xl font-bold'>Consent and Privacy</p>
+						</div>
+						<FormField
+							control={form.control}
+							name="treatmentConsent"
+							render={({ field }) => (
+								<FormItem className='flex items-center gap-3 accent-blue-900 space-y-0 md:col-span-2'>
+									<FormControl>
+										<Checkbox
+											checked={field.value}
+											onCheckedChange={field.onChange}
+											className='p-2'
+										/>
+									</FormControl>
+									<FormLabel className='text-base shad-input-label'>
+										I consent to receive treatment for my health condition
+									</FormLabel>
+								</FormItem>
+							)}
+						/>
+						<FormField
+							control={form.control}
+							name="informationConsent"
+							render={({ field }) => (
+								<FormItem className='flex items-center gap-3 space-y-0 md:col-span-2'>
+									<FormControl>
+										<Checkbox
+											checked={field.value}
+											onCheckedChange={field.onChange}
+											className='p-2 bg-gradient'
+										/>
+									</FormControl>
+									<FormLabel className='text-base shad-input-label'>
+										I consent to the use and disclosure of my health information for treatment purposes.
+									</FormLabel>
+								</FormItem>
+							)}
+						/>
+						<FormField
+							control={form.control}
+							name="privacyConsent"
+							render={({ field }) => (
+								<FormItem className='flex items-center gap-3 space-y-0 md:col-span-2'>
+									<FormControl>
+										<Checkbox
+											checked={field.value}
+											onCheckedChange={field.onChange}
+											className='p-2'
+										/>
+									</FormControl>
+									<FormLabel className='text-base shad-input-label'>
+										I acknowledge that I have reviewed and agree to the privacy policy.
+									</FormLabel>
+								</FormItem>
+							)}
+						/>
+						<Button
+							className='bg-primary md:col-span-2'
+							variant='default'
+							type='submit'>
+							Submit {loading && <Loader2 className="ml-2 animate-spin h-5 w-5" />}
+						</Button>
+
+					</form>
+				</Form>
+			</div>
+			<div className='absolute top-0 right-0 max-h-screen lg:flex hidden w-96 h-full'>
+				<div className='relative h-full w-full'>
+					<Image
+						src='/assets/images/Illustration.png'
+						alt=''
+						fill
+						className='object-contain rounded-md'
+					/>
+				</div>
+			</div>
+		</div>
+	);
+};
+
+export default PatientOnboardingPage

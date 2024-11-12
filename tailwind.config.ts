@@ -54,6 +54,18 @@ const config = {
         pending: "url('/assets/images/pending-bg.png')",
         cancelled: "url('/assets/images/cancelled-bg.png')",
       },
+      backgroundColor: {
+        primary: '#24AE7C',
+        background: '#24AE7C',
+        destructive: '#FF5733',
+        gradient: "radial-gradient(circle, rgba(77,98,229,1) 0%, rgba(135,221,238,1) 51%, rgba(182,240,156,1) 100%)"
+      },
+      borderColor: {
+        primary: '#24AE7C'
+      },
+      textColor: {
+        primary: '#24AE7C'
+      },
       keyframes: {
         "accordion-down": {
           from: { height: "0" },

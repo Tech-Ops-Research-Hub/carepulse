@@ -2,9 +2,7 @@
 'use client'
 
 import {
-    Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
     FormLabel,
@@ -12,8 +10,9 @@ import {
   } from "@/components/ui/form"
   import { Input } from "@/components/ui/input"
   import {Control} from "react-hook-form"
-  import { FormFieldType } from "./forms/PatientForm"
   import Image from 'next/image';
+import { FormFieldType } from "@/lib/constants";
+import { Textarea } from "./ui/textarea";
 
 
   interface CustomProps {
@@ -27,68 +26,74 @@ import {
     disabled?: boolean,
     dateFormat?: string,
     showTimeSelect?: boolean,
-    children?:React.ReactNode,
+    children?: React.ReactNode,
+    className?: string
     renderSkeleton?:(field:any)=> React.ReactNode,
-  }
+}
 
-  const RenderField=({field, props}:{field:any;props: CustomProps}) => {
-    const {fieldType, iconSrc, iconAlt, placeholder, }= props;
+const RenderField = ({ field, props }: { field: any; props: CustomProps }) => {
+  const { fieldType, iconSrc, iconAlt, placeholder, } = props;
 
-   switch (fieldType) {
+  switch (fieldType) {
     case FormFieldType.INPUT:
-        return(
-            <div className="flex rounded-md border border-dark-500 bg-dark-400">
+      return (
+        <div className="flex items-center rounded-md border border-dark-500 bg-dark-400">
+          {iconSrc && (
+            <Image
+              src={iconSrc}
+              height={24}
+              width={24}
+              alt={iconAlt || 'icon'}
+              className='ml-2'
+            />
 
-                {iconSrc &&(
-                    <Image
-                      src={iconSrc}
-                      height={24}
-                      width={24}
-                      alt={iconAlt || 'icon'}
-                      className='ml-2'
-                     />
-
-                )}
-
-                <FormControl>
-                    <Input
-                    placeholder={placeholder}
-                    {...field}
-                    className="shad-input border-0"
-                    />
-                </FormControl>
-            </div>
-        )
-        
-        break;
-   
+          )}
+          <FormControl>
+            <Input
+              placeholder={placeholder}
+              {...field}
+              className="shad-input border-0"
+            />
+          </FormControl>
+        </div>
+      )
+    case FormFieldType.TEXTAREA:
+      return (
+        <FormControl>
+          <Textarea
+            placeholder={placeholder}
+            {...field}
+            className="shad-input border-0 resize-none min-h-24"
+          />
+        </FormControl>
+      );
+  
     default:
-        break;
-   }
+      break;
   }
+};
 
-const CustomFormField = (props:CustomProps) => {
-    const {control, fieldType, name,label} = props;
+const CustomFormField = (props: CustomProps) => {
+  const { control, fieldType, name, label, className, disabled } = props;
 
   return (
-    <div>
-      <FormField
-        control={control}
-        name={name}
-        render={({ field }) => (
-          <FormItem className="flex-1">
-            {fieldType !== FormFieldType.CHECKBOX && label &&(
-                <FormLabel>{label}</FormLabel>
-            )}
+    <FormField
+      disabled={disabled || false}
+      control={control}
+      name={name}
+      render={({ field }) => (
+        <FormItem className={className}>
+          {fieldType !== FormFieldType.CHECKBOX && label && (
+            <FormLabel className='shad-input-label'>{label}</FormLabel>
+          )}
 
-            <RenderField field={field} props={props}/>
+          <RenderField field={field} props={props} />
 
-            <FormMessage className ="sha-error"/>
-          </FormItem>
-        )}
+          <FormMessage className="sha-error" />
+        </FormItem>
+      )}
     />
-    </div>
   )
-}
+};
 
 export default CustomFormField
